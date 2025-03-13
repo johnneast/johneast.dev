@@ -10,16 +10,5 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Index() {
-  return (
-    <>
-      <div className="flex flex-row gap-4 p-4 min-h-screen">
-        <div className="w-1/2">
-          <Bio />
-      </div>
-      <div className="w-1/2">
-          <ChatBox />
-        </div>
-      </div>
-    </>
-  );
+  return <Bio />;
 }
