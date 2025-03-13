@@ -1,5 +1,5 @@
-import ChatBox from "~/components/ChatBox";
-import Bio from "~/components/Bio";
+import ChatBox from "~/components/chat-box";
+import Bio from "~/components/bio";
 import type { Route } from "./+types/home";
 
 export function meta({}: Route.MetaArgs) {
