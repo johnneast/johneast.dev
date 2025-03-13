@@ -1,6 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-
-export default function Bio() {
+export default function MyBio() {
   return (
     <div className="flex flex-col gap-4">
       <p>
