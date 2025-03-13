@@ -56,13 +56,14 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="p-4">
+      <header className="p-4 z-10 relative">
         <h1 className="text-4xl font-bold">Hi there, I'm John East</h1>
       </header>
+
       <div className="flex flex-1 flex-col md:flex-row">
         <nav
           className={cn(
-            "md:w-1/2 p-4 transition-all",
+            "md:w-1/2 p-4 md:fixed md:top-[80px] md:h-[calc(100vh-80px)] transition-all",
             isMobileMenuOpen ? "block" : "hidden md:block"
           )}
         >
@@ -77,7 +78,7 @@ export default function App() {
                       isActive ? "text-blue-600 dark:text-blue-400" : ""
                     )
                   }
-                  onClick={() => setIsMobileMenuOpen(false)} // Close menu on click (mobile)
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <Button
                     variant="ghost"
@@ -97,8 +98,11 @@ export default function App() {
         >
           {isMobileMenuOpen ? "Close" : "Menu"}
         </button>
-        <main className="md:w-1/2 p-4 flex-1">
-          <Outlet /> 
+
+        <main
+          className="md:w-1/2 p-4 md:ml-[50%] md:h-[calc(100vh-80px)] md:overflow-y-auto bg-white dark:bg-gray-900"
+        >
+          <Outlet />
         </main>
       </div>
     </div>
