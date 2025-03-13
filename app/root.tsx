@@ -2,6 +2,7 @@ import {
   isRouteErrorResponse,
   Links,
   Meta,
+  NavLink,
   Outlet,
   Scripts,
   ScrollRestoration,
@@ -9,6 +10,9 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { useState } from "react";
+import { cn } from "./lib/utils";
+import { Button } from "./components/ui/button";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -42,7 +46,67 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const navItems = [
+    { to: "/", label: "About" },
+    { to: "/experience", label: "Experience" },
+    { to: "/chat", label: "Chat" },
+  ];
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      <header className="p-4 z-10 relative">
+        <h1 className="text-4xl font-bold">Hi there, I'm John East</h1>
+      </header>
+
+      <div className="flex flex-1 flex-col md:flex-row">
+        <nav
+          className={cn(
+            "md:w-1/2 p-4 md:fixed md:top-[80px] md:h-[calc(100vh-80px)] transition-all",
+            isMobileMenuOpen ? "block" : "hidden md:block"
+          )}
+        >
+          <ul className="flex flex-col gap-2">
+            {navItems.map((item) => (
+              <li key={item.to}>
+                <NavLink
+                  to={item.to}
+                  className={({ isActive }) =>
+                    cn(
+                      "block w-full",
+                      isActive ? "text-blue-600 dark:text-blue-400" : ""
+                    )
+                  }
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-left"
+                  >
+                    {item.label}
+                  </Button>
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <button
+          className="md:hidden p-4 bg-gray-200 dark:bg-gray-700"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
+          {isMobileMenuOpen ? "Close" : "Menu"}
+        </button>
+
+        <main
+          className="md:w-1/2 p-4 md:ml-[50%] md:h-[calc(100vh-80px)] md:overflow-y-auto bg-white dark:bg-gray-900"
+        >
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

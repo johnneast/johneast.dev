@@ -1,13 +1,14 @@
+import ChatBox from "~/components/chat-box";
+import Bio from "~/components/bio";
 import type { Route } from "./+types/home";
-import { Welcome } from "../welcome/welcome";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
+    { title: "John East" },
+    { name: "description", content: "Hi, I'm John East" },
   ];
 }
 
 export default function Index() {
-  return <Welcome />;
+  return <Bio />;
 }
