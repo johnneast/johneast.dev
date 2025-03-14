@@ -56,14 +56,14 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="p-4 z-10 relative">
+      <header className="p-4 fixed top-0 left-0 w-full z-20 backdrop-blur-md supports-[backdrop-filter]:bg-white/80 dark:supports-[backdrop-filter]:bg-gray-900/80">
         <h1 className="text-4xl font-bold">Hi there, I'm John East</h1>
       </header>
 
-      <div className="flex flex-1 flex-col md:flex-row">
+      <div className="flex flex-1 flex-col md:flex-row pt-[80px]">
         <nav
           className={cn(
-            "md:w-1/2 p-4 md:fixed md:top-[80px] md:h-[calc(100vh-80px)] transition-all",
+            "md:w-1/2 p-4 md:fixed md:top-[80px] md:h-[calc(100vh-80px-60px)] transition-all",
             isMobileMenuOpen ? "block" : "hidden md:block"
           )}
         >
@@ -100,11 +100,16 @@ export default function App() {
         </button>
 
         <main
-          className="md:w-1/2 p-4 md:ml-[50%] md:h-[calc(100vh-80px)] md:overflow-y-auto bg-white dark:bg-gray-900"
+          className="md:w-1/2 p-4 md:ml-[50%] md:h-[calc(100vh-60px)] md:overflow-y-auto"
         >
           <Outlet />
         </main>
       </div>
+      <footer className="p-4 fixed bottom-0 left-0 w-full text-sm z-20">
+        <p>
+          Built with love by me using <a href="https://reactrouter.com/">React Router</a> and <a href="https://ui.shadcn.com/">shadcn</a>
+        </p>
+      </footer>
     </div>
   );
 }
