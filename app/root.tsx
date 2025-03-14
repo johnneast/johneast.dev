@@ -67,8 +67,6 @@ export default function App() {
   const currentRouteLabel =
     navItems.find((item) => item.to === location.pathname)?.label || "Select";
 
-
-  console.log(`location.pathname: ${location.pathname}`);
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       {/* Desktop Layout */}
@@ -123,7 +121,7 @@ export default function App() {
         <nav className="p-4 sticky top-0 z-10 bg-background">
           <Select
             value={location.pathname}
-            defaultValue={location.pathname}
+            defaultValue={currentRouteLabel}
             onValueChange={(value) => navigate(value)}
           >
             <SelectTrigger className="w-full">
