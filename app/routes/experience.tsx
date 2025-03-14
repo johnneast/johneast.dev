@@ -17,10 +17,7 @@ export default function Experience({
       <h2 className="text-xl font-semibold">Experience</h2>
       <ul className="space-y-6">
         {experienceData && experienceData.map((exp, index) => (
-          <li 
-            key={index} 
-            className="border-b pb-4 last:border-b-0 opacity-65 hover:opacity-100"
-          >
+          <li key={index} className="border-b pb-4 last:border-b-0">
             <ExperienceSection experience={exp} />
           </li>
         ))}

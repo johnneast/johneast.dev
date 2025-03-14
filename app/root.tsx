@@ -6,13 +6,23 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useNavigate,
+  useLocation,
 } from "react-router";
-
 import type { Route } from "./+types/root";
 import "./app.css";
 import { useState } from "react";
 import { cn } from "./lib/utils";
 import { Button } from "./components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./components/ui/select";
+import FooterContent from "./components/footer-content";
+import HeaderContent from "./components/header-content";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -46,70 +56,94 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
+  const navigate = useNavigate();
+  const location = useLocation();
   const navItems = [
     { to: "/", label: "About" },
     { to: "/experience", label: "Experience" },
     { to: "/chat", label: "Chat" },
   ];
 
+  const currentRouteLabel =
+    navItems.find((item) => item.to === location.pathname)?.label || "Select";
+
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="p-4 fixed top-0 left-0 w-full z-20 backdrop-blur-md supports-[backdrop-filter]:bg-white/80 dark:supports-[backdrop-filter]:bg-gray-900/80">
-        <h1 className="text-4xl font-bold">Hi there, I'm John East</h1>
-      </header>
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
+      {/* Desktop Layout */}
+      <div className="hidden md:flex md:flex-row h-screen max-w-7xl mx-auto">
+        <div className="md:w-1/2 flex flex-col h-screen p-4 pt-12">
+          <header className="mb-8">
+            <HeaderContent />
+          </header>
 
-      <div className="flex flex-1 flex-col md:flex-row pt-[80px]">
-        <nav
-          className={cn(
-            "md:w-1/2 p-4 md:fixed md:top-[80px] md:h-[calc(100vh-80px-60px)] transition-all",
-            isMobileMenuOpen ? "block" : "hidden md:block"
-          )}
-        >
-          <ul className="flex flex-col gap-2">
-            {navItems.map((item) => (
-              <li key={item.to}>
-                <NavLink
-                  to={item.to}
-                  className={({ isActive }) =>
-                    cn(
-                      "block w-full",
-                      isActive ? "text-blue-600 dark:text-blue-400" : ""
-                    )
-                  }
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start text-left"
+          <nav className="flex-1">
+            <ul className="flex flex-col gap-2 h-full">
+              {navItems.map((item) => (
+                <li key={item.to}>
+                  <NavLink
+                    to={item.to}
+                    className={({ isActive }) =>
+                      cn(
+                        "block w-full",
+                        isActive ? "text-primary" : "text-foreground"
+                      )
+                    }
                   >
-                    {item.label}
-                  </Button>
-                </NavLink>
-              </li>
-            ))}
-          </ul>
-        </nav>
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start text-left"
+                    >
+                      {item.label}
+                    </Button>
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          </nav>
 
-        <button
-          className="md:hidden p-4 bg-gray-200 dark:bg-gray-700"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        >
-          {isMobileMenuOpen ? "Close" : "Menu"}
-        </button>
+          <footer className="text-sm">
+            <FooterContent />
+          </footer>
+        </div>
 
-        <main
-          className="md:w-1/2 p-4 md:ml-[50%] md:h-[calc(100vh-60px)] md:overflow-y-auto"
-        >
+        {/* Main Content */}
+        <main className="md:w-1/2 p-4 pt-12 h-screen overflow-y-auto">
           <Outlet />
         </main>
       </div>
-      <footer className="p-4 fixed bottom-0 left-0 w-full text-sm z-20">
-        <p>
-          Built with love by me using <a href="https://reactrouter.com/">React Router</a> and <a href="https://ui.shadcn.com/">shadcn</a>
-        </p>
-      </footer>
+
+      {/* Mobile Layout */}
+      <div className="md:hidden flex flex-col">
+        <header className="p-4 w-full">
+          <HeaderContent />
+        </header>
+
+        <nav className="p-4 sticky top-0 z-10 bg-background">
+          <Select
+            value={location.pathname}
+            onValueChange={(value) => navigate(value)}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select a page" />
+            </SelectTrigger>
+            <SelectContent>
+              {navItems.map((item) => (
+                <SelectItem key={item.to} value={item.to}>
+                  {item.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </nav>
+
+        <main className="p-4 flex-1">
+          <Outlet />
+        </main>
+
+        <footer className="p-4 text-sm">
+          <FooterContent />
+        </footer>
+      </div>
     </div>
   );
 }
