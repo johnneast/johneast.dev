@@ -82,6 +82,7 @@ export default function App() {
                 <li key={item.to}>
                   <NavLink
                     to={item.to}
+                    end
                     className={({ isActive }) =>
                       cn(
                         "block w-full",
@@ -121,6 +122,7 @@ export default function App() {
         <nav className="p-4 sticky top-0 z-10 bg-background">
           <Select
             value={location.pathname}
+            defaultValue={currentRouteLabel}
             onValueChange={(value) => navigate(value)}
           >
             <SelectTrigger className="w-full">
