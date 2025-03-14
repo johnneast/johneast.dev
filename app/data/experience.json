@@ -1,0 +1,40 @@
+[
+  {
+    "company": "Shopify",
+    "title": "Staff Software Developer",
+    "skills": ["React", "TypeScript", "Ruby on Rails", "GraphQL", "MySQL"],
+    "description": [
+      "Built solutions with Ruby on Rails and React, contributing hands on to code and engineering designs across multiple large scale projects.",
+      "As an engineering lead, directed a team of frontend and backend developers while collaborating with cross functional stakeholders such as data, UX, product, and revenue teams, to deliver impactful results. Shaped the roadmap to balance engineering priorities, such as tech debt reduction and optimizations, with product goals, and mentored junior and intern engineers to support team growth and technical excellence."
+    ]
+  },
+  {
+    "company": "Evertz Canada",
+    "title": "Staff Software Engineer and Team Lead",
+    "skills": ["Java", "Python", "Node.js", "Angular", "MariaDB", "Elasticsearch", "Docker", "AWS"],
+    "description": [
+      "Served as a tech lead on the Mediator asset management system, a large scale platform used by major television broadcasters, focusing on the file transfer component.",
+      "Directed a team of engineers to transition Mediator from an on premises setup to a cloud based solution on AWS, a shift that earned an Emmy for the company.",
+      "Built solutions with a clustered Java application and Python scripts, including a Python framework to streamline interaction with the Mediator API and manage file transfers for the deployment team.",
+      "Contributed hands on to code and created a Node.js and Docker based CLI, that enhanced developer and QA efficiency across teams.",
+      "Supported hiring efforts to balance engineering skills between the UK and Canada offices after relocating from the UK, shaping the team and roadmap for success."
+    ]
+  },
+  {
+    "company": "Evertz UK",
+    "title": "Senior Software Engineer",
+    "skills": ["Java", "Oracle"],
+    "description": [
+      "Designed and built the Mediator file transfer system, a key component of a large scale asset management platform used by major broadcasters worldwide.",
+      "Led a team of engineers, collaborating closely with deployment engineers to meet customer needs through product enhancements and customized scripting, ensuring tailored solutions and successful delivery."
+    ]
+  },
+  {
+    "company": "Pharos Communications",
+    "title": "Software Engineer",
+    "skills": ["Java", "SQL", "JavaScript", "HTML", "CSS"],
+    "description": [
+      "Developed custom solutions for television and radio broadcasting clients, ranging in scale from individual stations to global networks."
+    ]
+  }
+]
