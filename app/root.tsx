@@ -82,6 +82,7 @@ export default function App() {
                 <li key={item.to}>
                   <NavLink
                     to={item.to}
+                    end
                     className={({ isActive }) =>
                       cn(
                         "block w-full",
