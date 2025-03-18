@@ -9,9 +9,9 @@ import {
   useNavigate,
   useLocation,
 } from "react-router";
+
 import type { Route } from "./+types/root";
 import "./app.css";
-import { useState } from "react";
 import { cn } from "./lib/utils";
 import { Button } from "./components/ui/button";
 import {
