@@ -15,10 +15,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   console.log(`loader session id: ${session.id}`);
   console.log(`loader server chat history: ${JSON.stringify(getChatHistory(session))}`);
   return data({
-    chatHistory: getChatHistory(session),
-    headers: {
-      "Set-Cookie": await commitSession(session),
-    }
+    chatHistory: getChatHistory(session)
   });
 }
 
@@ -51,12 +48,14 @@ export async function action({ request }: Route.ActionArgs) {
   console.log(`action server new chat history: ${JSON.stringify(newChatHistory)}`);
   session.set("chatHistory", newChatHistory);
 
-  return data({
-    chatHistory: newChatHistory,
-    headers: {
-      "Set-Cookie": await commitSession(session),
+  return data(
+    { chatHistory: newChatHistory },
+    {
+      headers: {
+        "Set-Cookie": await commitSession(session),
+      }
     }
-  });
+  );
 }
 
 export default function Chat({ loaderData }: Route.ComponentProps) {
