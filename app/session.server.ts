@@ -7,7 +7,7 @@ if (!sessionSecret) {
 }
 
 export type SessionData = {
-  chatHistory: Message[];
+  chatHistory: string;
 }
 
 export type SessionFlashData = {
