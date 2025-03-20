@@ -7,14 +7,19 @@ import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { commitSession, getSession, type SessionData } from "../session.server";
 import type { Message } from "../types/chat";
+import { getChatbotResponse } from "~/lib/chat-api";
 
-const MAX_COOKIE_SIZE = 4096;
+const MAX_COOKIE_SIZE = 2048;
+
+function getStringByteSize(str: string) {
+  return new Blob([str]).size;
+}
 
 function compressChatHistory(chatHistory: Message[]) {
   let json = JSON.stringify(chatHistory);
   let compressed = LZString.compress(json);
   
-  while (new Blob([compressed]).size > MAX_COOKIE_SIZE) {
+  while (getStringByteSize(compressed) > MAX_COOKIE_SIZE && chatHistory.length > 0) {
     chatHistory.shift();
     json = JSON.stringify(chatHistory);
     compressed = LZString.compress(json);
@@ -59,16 +64,17 @@ export async function action({ request }: Route.ActionArgs) {
     timestamp: Number(timestamp),
   };
 
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  const assistantResponse = await getChatbotResponse(message as string, chatHistory);
 
   const assistantMessage: Message = {
     sender: "assistant",
-    content: `Assistant response to user message: ${message}`,
+    content: assistantResponse,
     timestamp: Date.now(),
   };
 
-  const newChatHistory = compressChatHistory([...chatHistory, userMessage, assistantMessage]);
-  session.set("chatHistory", newChatHistory);
+  const newChatHistory = [...chatHistory, userMessage, assistantMessage];
+  
+  session.set("chatHistory", compressChatHistory(newChatHistory));
 
   return data(
     { chatHistory: newChatHistory },
