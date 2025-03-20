@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { data, useFetcher, type Session } from "react-router";
 import type { Route } from "./+types/chat";
 import { Input } from "../components/ui/input";
@@ -40,7 +40,7 @@ export async function action({ request }: Route.ActionArgs) {
     timestamp: Date.now(),
   };
 
-  const newChatHistory = [...chatHistory, userMessage, assistantMessage];
+  const newChatHistory = [...chatHistory, userMessage, assistantMessage].slice(-15);
   session.set("chatHistory", newChatHistory);
 
   return data(
@@ -56,13 +56,36 @@ export async function action({ request }: Route.ActionArgs) {
 export default function Chat({ loaderData }: Route.ComponentProps) {
   const fetcher = useFetcher();
   const submitting = fetcher.state !== "idle";
-  const { chatHistory } = loaderData;
+  const { chatHistory: initialChatHistory } = loaderData;
   const [message, setMessage] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [chatHistory, setChatHistory] = useState<Message[]>(initialChatHistory);
+
+  useEffect(() => {
+    const newChatHistory = [...initialChatHistory];
+    if (fetcher.formData) {
+      newChatHistory.push({
+        sender: "user",
+        content: fetcher.formData.get("message") as string,
+        timestamp: Number(fetcher.formData.get("timestamp")),
+      });
+    }
+    setChatHistory(newChatHistory);
+  }, [fetcher.formData, initialChatHistory]);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollTo({
+        top: messagesEndRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [chatHistory]);
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col max-h-[inherit]">
       {/* Chat Header */}
-      <div className="border-b p-4">
+      <div className="border-b p-4 shrink-0">
         <h2 className="text-lg font-semibold">Chat Demo</h2>
         <p className="text-sm text-muted-foreground">
           Ask me about my experience or anything else you'd like to know about me.
@@ -70,7 +93,7 @@ export default function Chat({ loaderData }: Route.ComponentProps) {
       </div>
 
       {/* Chat Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div ref={messagesEndRef} className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
         <div className="flex flex-col space-y-2">
           {chatHistory &&  chatHistory.map((message) => (
             message.sender === "assistant" ? (
@@ -93,21 +116,11 @@ export default function Chat({ loaderData }: Route.ComponentProps) {
               </div>
             )
           ))}
-          {fetcher.formData && (
-            <div className="flex justify-end">
-              <div className="max-w-[70%] rounded-lg bg-primary text-primary-foreground p-3">
-                <p className="text-sm">{fetcher.formData.get("message") as string}</p>
-                <span className="text-xs mt-1 block opacity-80">
-                  {new Date(Number(fetcher.formData.get("timestamp"))).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-                </span>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
       {/* Message Input Area */}
-      <div className="border-t p-4">
+      <div className="border-t p-4 shrink-0">
         <fetcher.Form method="post" className="flex gap-2">
           <Input
             placeholder="Type a message..."

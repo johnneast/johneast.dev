@@ -138,7 +138,7 @@ export default function App() {
           </Select>
         </nav>
 
-        <main className="p-4 flex-1">
+        <main className="p-4 flex-1 max-h-[calc(100vh-12rem)] overflow-y-auto">
           <Outlet />
         </main>
 
