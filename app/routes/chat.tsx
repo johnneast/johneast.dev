@@ -1,13 +1,40 @@
 import { useEffect, useRef, useState } from "react";
 import { data, useFetcher, type Session } from "react-router";
+import LZString from "lz-string";
+
 import type { Route } from "./+types/chat";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { commitSession, getSession, type SessionData } from "../session.server";
 import type { Message } from "../types/chat";
 
+const MAX_COOKIE_SIZE = 4096;
+
+function compressChatHistory(chatHistory: Message[]) {
+  let json = JSON.stringify(chatHistory);
+  let compressed = LZString.compress(json);
+  
+  while (new Blob([compressed]).size > MAX_COOKIE_SIZE) {
+    chatHistory.shift();
+    json = JSON.stringify(chatHistory);
+    compressed = LZString.compress(json);
+  }
+
+  return compressed;
+}
+
+function decompressChatHistory(compressed: string): Message[] {
+  try {
+    let json = LZString.decompress(compressed);
+    return json ? JSON.parse(json) : [];
+  } catch (error) {
+    console.error("Error decompressing chat history:", error);
+    return [];
+  }
+}
+
 function getChatHistory(session: Session<SessionData>) {
-  return session.get("chatHistory") || [];
+  return decompressChatHistory(session.get("chatHistory") || "");
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -40,7 +67,7 @@ export async function action({ request }: Route.ActionArgs) {
     timestamp: Date.now(),
   };
 
-  const newChatHistory = [...chatHistory, userMessage, assistantMessage].slice(-15);
+  const newChatHistory = compressChatHistory([...chatHistory, userMessage, assistantMessage]);
   session.set("chatHistory", newChatHistory);
 
   return data(
