@@ -12,8 +12,6 @@ function getChatHistory(session: Session<SessionData>) {
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
-  console.log(`loader session id: ${session.id}`);
-  console.log(`loader server chat history: ${JSON.stringify(getChatHistory(session))}`);
   return data({
     chatHistory: getChatHistory(session)
   });
@@ -21,14 +19,12 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export async function action({ request }: Route.ActionArgs) {
   const session = await getSession(request.headers.get("Cookie"));
-  console.log(`action session id: ${session.id}`);
   const chatHistory = getChatHistory(session);
-  console.log(`action server chat history: ${JSON.stringify(chatHistory)}`);
 
   const formData = await request.formData();
   const message = formData.get("message");
   const timestamp = formData.get("timestamp");
-  console.log(`Received message: ${message} at ${timestamp}`);
+
 
   const userMessage: Message = {
     sender: "user",
@@ -45,7 +41,6 @@ export async function action({ request }: Route.ActionArgs) {
   };
 
   const newChatHistory = [...chatHistory, userMessage, assistantMessage];
-  console.log(`action server new chat history: ${JSON.stringify(newChatHistory)}`);
   session.set("chatHistory", newChatHistory);
 
   return data(
@@ -64,7 +59,6 @@ export default function Chat({ loaderData }: Route.ComponentProps) {
   const { chatHistory } = loaderData;
   const [message, setMessage] = useState("");
 
-  console.log(`Browser chat history: ${JSON.stringify(chatHistory)}`);
   return (
     <div className="h-full flex flex-col">
       {/* Chat Header */}
@@ -125,7 +119,6 @@ export default function Chat({ loaderData }: Route.ComponentProps) {
           <Button size="icon" disabled={submitting} onClick={(e) => {
             e.preventDefault();
             if (message) {
-              console.log(`Submitting message: ${message}`);
               const timestamp = Date.now();
               fetcher.submit({ message: message.trim(), timestamp }, { method: "post" });
               setMessage("");
