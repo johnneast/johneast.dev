@@ -149,6 +149,15 @@ export default function Chat({ loaderData }: Route.ComponentProps) {
               </div>
             )
           ))}
+          {submitting && (
+            <div className="flex justify-start">
+              <div className="max-w-[70%] rounded-lg bg-muted p-3 flex items-center space-x-1">
+                <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: "0s" }}></span>
+                <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></span>
+                <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: "0.4s" }}></span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
