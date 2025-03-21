@@ -1,42 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { data, useFetcher } from 'react-router';
-import pako from 'pako';
 
 import type { Route } from './+types/chat';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import type { Message } from '../types/chat';
 import { getChatbotResponse } from '~/lib/chat-api';
-
-const CHAT_HISTORY_KEY = 'chatHistory';
-
-function compressChatHistory(chatHistory: Message[]) {
-  return pako.deflate(JSON.stringify(chatHistory));
-}
-
-function compressChatHistoryForTransport(chatHistory: Message[]): string {
-  const compressed = compressChatHistory(chatHistory);
-  return btoa(String.fromCharCode(...compressed));
-}
-
-function decompressChatHistory(compressed: Uint8Array): Message[] {
-  try {
-    const jsonString = pako.inflate(compressed, { to: 'string' });
-    return JSON.parse(jsonString) as Message[];
-  } catch (error) {
-    console.error('Error decompressing chat history:', error);
-    return [];
-  }
-}
-
-function decompressChatHistoryFromTransport(compressed: string): Message[] {
-  const binaryString = atob(compressed);
-  const binary = new Uint8Array(binaryString.length);
-  for (let i = 0; i < binaryString.length; i++) {
-    binary[i] = binaryString.charCodeAt(i);
-  }
-  return decompressChatHistory(binary);
-}
+import {
+  compressChatHistoryForTransport,
+  decompressChatHistoryFromTransport,
+  loadChatHistory,
+  saveChatHistory,
+} from '~/lib/chat-history';
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
@@ -75,19 +50,13 @@ export default function Chat() {
 
   // Load initial chat history from localStorage
   useEffect(() => {
-    const compressed = localStorage.getItem(CHAT_HISTORY_KEY);
-    if (compressed) {
-      const storedHistory = decompressChatHistoryFromTransport(compressed);
-      setChatHistory(storedHistory);
-    } else {
-      localStorage.setItem(CHAT_HISTORY_KEY, compressChatHistoryForTransport([]));
-    }
+    setChatHistory(loadChatHistory());
   }, []);
 
   useEffect(() => {
     if (fetcher.data?.chatHistory && !submitting) {
       const newHistory = decompressChatHistoryFromTransport(fetcher.data.chatHistory);
-      localStorage.setItem(CHAT_HISTORY_KEY, fetcher.data.chatHistory);
+      saveChatHistory(newHistory);
       setChatHistory(newHistory);
     }
   }, [fetcher.data, submitting]);
@@ -99,7 +68,7 @@ export default function Chat() {
         behavior: 'smooth',
       });
     }
-  }, [chatHistory]);
+  }, [chatHistory, fetcher.formData]);
 
   return (
     <div className="h-full flex flex-col max-h-[inherit]">
@@ -117,7 +86,7 @@ export default function Chat() {
           {chatHistory &&
             chatHistory.map((message) =>
               message.sender === 'assistant' ? (
-                <div className="flex justify-start">
+                <div className="flex justify-start" key={message.timestamp}>
                   <div className="max-w-[70%] rounded-lg bg-muted p-3">
                     <p className="text-sm">{message.content}</p>
                     <span className="text-xs text-muted-foreground mt-1 block">
@@ -126,7 +95,7 @@ export default function Chat() {
                   </div>
                 </div>
               ) : (
-                <div className="flex justify-end">
+                <div className="flex justify-end" key={message.timestamp}>
                   <div className="max-w-[70%] rounded-lg bg-primary text-primary-foreground p-3">
                     <p className="text-sm">{message.content}</p>
                     <span className="text-xs mt-1 block opacity-80">
