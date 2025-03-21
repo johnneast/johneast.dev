@@ -2,6 +2,8 @@
   {
     "company": "Shopify",
     "title": "Staff Software Developer",
+    "startDate": "August 2021",
+    "endDate": "February 2024",
     "skills": ["React", "TypeScript", "Ruby on Rails", "GraphQL", "MySQL"],
     "description": [
       "Built solutions with Ruby on Rails and React, contributing hands on to code and engineering designs across multiple large scale projects.",
@@ -11,6 +13,8 @@
   {
     "company": "Evertz Canada",
     "title": "Staff Software Engineer and Team Lead",
+    "startDate": "March 2015",
+    "endDate": "August 2021",
     "skills": ["Java", "Python", "Node.js", "Angular", "MariaDB", "Elasticsearch", "Docker", "AWS"],
     "description": [
       "Served as a tech lead on the Mediator asset management system, a large scale platform used by major television broadcasters, focusing on the file transfer component.",
@@ -23,6 +27,8 @@
   {
     "company": "Evertz UK",
     "title": "Senior Software Engineer",
+    "startDate": "December 2010",
+    "endDate": "March 2015",
     "skills": ["Java", "Oracle"],
     "description": [
       "Designed and built the Mediator file transfer system, a key component of a large scale asset management platform used by major broadcasters worldwide.",
@@ -32,6 +38,8 @@
   {
     "company": "Pharos Communications",
     "title": "Software Engineer",
+    "startDate": "October 1998",
+    "endDate": "December 2010",
     "skills": ["Java", "SQL", "JavaScript", "HTML", "CSS"],
     "description": [
       "Developed custom solutions for television and radio broadcasting clients, ranging in scale from individual stations to global networks."

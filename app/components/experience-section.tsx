@@ -1,5 +1,5 @@
-import type { Experience } from "~/types/experience";
-import { Badge } from "./ui/badge";
+import type { Experience } from '~/types/experience';
+import { Badge } from './ui/badge';
 
 type ExperienceSectionProps = {
   experience: Experience;
@@ -8,7 +8,12 @@ type ExperienceSectionProps = {
 export default function ExperienceSection({ experience }: ExperienceSectionProps) {
   return (
     <article>
-      <h3 className="text-lg font-medium">{experience.company} - {experience.title}</h3>
+      <h3 className="text-lg font-medium">
+        {experience.company} - {experience.title}
+      </h3>
+      <p className="text-sm text-muted-foreground">
+        {experience.startDate} - {experience.endDate}
+      </p>
       <div className="flex flex-wrap gap-2 mt-2">
         {experience.skills.map((skill) => (
           <Badge key={skill} variant="secondary">
