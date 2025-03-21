@@ -8,28 +8,29 @@ function getStringByteSize(data: Uint8Array | string): number {
   return new Blob([data]).size;
 }
 
-export function compressChatHistory(chatHistory: Message[]): Uint8Array {
+export function compressChatHistory(chatHistory: Message[]): string {
   let json = JSON.stringify(chatHistory);
   let compressed = pako.deflate(json);
+  let base64 = btoa(String.fromCharCode(...compressed));
 
-  while (getStringByteSize(compressed) > MAX_STORAGE_SIZE && chatHistory.length > 0) {
-    console.log('Compressed size exceeds 2MB, trimming history:', getStringByteSize(compressed));
-    chatHistory.shift(); // Remove oldest message
+  while (getStringByteSize(base64) > MAX_STORAGE_SIZE && chatHistory.length > 0) {
+    chatHistory.shift();
     json = JSON.stringify(chatHistory);
     compressed = pako.deflate(json);
+    base64 = btoa(String.fromCharCode(...compressed));
   }
 
-  return compressed;
+  return base64;
 }
 
-export function compressChatHistoryForTransport(chatHistory: Message[]): string {
-  const compressed = compressChatHistory(chatHistory);
-  return btoa(String.fromCharCode(...compressed));
-}
-
-export function decompressChatHistory(compressed: Uint8Array): Message[] {
+export function decompressChatHistory(compressed: string): Message[] {
   try {
-    const jsonString = pako.inflate(compressed, { to: 'string' });
+    const binaryString = atob(compressed);
+    const binary = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      binary[i] = binaryString.charCodeAt(i);
+    }
+    const jsonString = pako.inflate(binary, { to: 'string' });
     return JSON.parse(jsonString) as Message[];
   } catch (error) {
     console.error('Error decompressing chat history:', error);
@@ -37,25 +38,16 @@ export function decompressChatHistory(compressed: Uint8Array): Message[] {
   }
 }
 
-export function decompressChatHistoryFromTransport(compressed: string): Message[] {
-  const binaryString = atob(compressed);
-  const binary = new Uint8Array(binaryString.length);
-  for (let i = 0; i < binaryString.length; i++) {
-    binary[i] = binaryString.charCodeAt(i);
-  }
-  return decompressChatHistory(binary);
-}
-
 export function loadChatHistory(): Message[] {
   const compressed = localStorage.getItem(CHAT_HISTORY_KEY);
   if (compressed) {
-    return decompressChatHistoryFromTransport(compressed);
+    return decompressChatHistory(compressed);
   }
   const emptyHistory: Message[] = [];
-  localStorage.setItem(CHAT_HISTORY_KEY, compressChatHistoryForTransport(emptyHistory));
+  localStorage.setItem(CHAT_HISTORY_KEY, compressChatHistory(emptyHistory));
   return emptyHistory;
 }
 
 export function saveChatHistory(chatHistory: Message[]) {
-  localStorage.setItem(CHAT_HISTORY_KEY, compressChatHistoryForTransport(chatHistory));
+  localStorage.setItem(CHAT_HISTORY_KEY, compressChatHistory(chatHistory));
 }

@@ -6,12 +6,7 @@ import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import type { Message } from '../types/chat';
 import { getChatbotResponse } from '~/lib/chat-api';
-import {
-  compressChatHistoryForTransport,
-  decompressChatHistoryFromTransport,
-  loadChatHistory,
-  saveChatHistory,
-} from '~/lib/chat-history';
+import { compressChatHistory, decompressChatHistory, loadChatHistory, saveChatHistory } from '~/lib/chat-history';
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
@@ -19,7 +14,7 @@ export async function action({ request }: Route.ActionArgs) {
   const timestamp = formData.get('timestamp');
   const compressedHistory = formData.get('compressedHistory');
 
-  const chatHistory = compressedHistory ? decompressChatHistoryFromTransport(compressedHistory as string) : [];
+  const chatHistory = compressedHistory ? decompressChatHistory(compressedHistory as string) : [];
 
   const userMessage: Message = {
     sender: 'user',
@@ -38,7 +33,7 @@ export async function action({ request }: Route.ActionArgs) {
   chatHistory.push(userMessage);
   chatHistory.push(response);
 
-  return data({ chatHistory: compressChatHistoryForTransport(chatHistory) });
+  return data({ chatHistory: compressChatHistory(chatHistory) });
 }
 
 export default function Chat() {
@@ -55,7 +50,7 @@ export default function Chat() {
 
   useEffect(() => {
     if (fetcher.data?.chatHistory && !submitting) {
-      const newHistory = decompressChatHistoryFromTransport(fetcher.data.chatHistory);
+      const newHistory = decompressChatHistory(fetcher.data.chatHistory);
       saveChatHistory(newHistory);
       setChatHistory(newHistory);
     }
@@ -155,7 +150,7 @@ export default function Chat() {
             onClick={(e) => {
               e.preventDefault();
               if (message) {
-                const compressedHistory = compressChatHistoryForTransport(chatHistory);
+                const compressedHistory = compressChatHistory(chatHistory);
                 const timestamp = Date.now();
                 fetcher.submit({ message, compressedHistory, timestamp }, { method: 'post' });
                 setMessage('');
