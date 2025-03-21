@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { data, useFetcher } from 'react-router';
-import LZString from 'lz-string';
+import pako from 'pako';
 
 import type { Route } from './+types/chat';
 import { Input } from '../components/ui/input';
@@ -8,42 +8,49 @@ import { Button } from '../components/ui/button';
 import type { Message } from '../types/chat';
 import { getChatbotResponse } from '~/lib/chat-api';
 
-const MAX_STORAGE_SIZE = 1024 * 1024 * 2;
 const CHAT_HISTORY_KEY = 'chatHistory';
 
-function getStringByteSize(str: string) {
-  return new Blob([str]).size;
-}
-
 function compressChatHistory(chatHistory: Message[]) {
-  let json = JSON.stringify(chatHistory);
-  let compressed = LZString.compress(json);
-
-  while (getStringByteSize(compressed) > MAX_STORAGE_SIZE && chatHistory.length > 0) {
-    chatHistory.shift();
-    json = JSON.stringify(chatHistory);
-    compressed = LZString.compress(json);
-  }
-
-  return compressed;
+  return pako.deflate(JSON.stringify(chatHistory));
 }
 
-function decompressChatHistory(compressed: string): Message[] {
+function compressChatHistoryForTransport(chatHistory: Message[]): string {
+  const compressed = compressChatHistory(chatHistory);
+  return btoa(String.fromCharCode(...compressed));
+}
+
+function decompressChatHistory(compressed: Uint8Array): Message[] {
   try {
-    let json = LZString.decompress(compressed);
-    return json ? JSON.parse(json) : [];
+    const jsonString = pako.inflate(compressed, { to: 'string' });
+    return JSON.parse(jsonString) as Message[];
   } catch (error) {
     console.error('Error decompressing chat history:', error);
     return [];
   }
 }
 
+function decompressChatHistoryFromTransport(compressed: string): Message[] {
+  const binaryString = atob(compressed);
+  const binary = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    binary[i] = binaryString.charCodeAt(i);
+  }
+  return decompressChatHistory(binary);
+}
+
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   const message = formData.get('message');
+  const timestamp = formData.get('timestamp');
   const compressedHistory = formData.get('compressedHistory');
 
-  const chatHistory = compressedHistory ? decompressChatHistory(compressedHistory as string) : [];
+  const chatHistory = compressedHistory ? decompressChatHistoryFromTransport(compressedHistory as string) : [];
+
+  const userMessage: Message = {
+    sender: 'user',
+    content: message as string,
+    timestamp: Number(timestamp),
+  };
 
   const chatResponse = await getChatbotResponse(message as string, chatHistory);
 
@@ -53,7 +60,10 @@ export async function action({ request }: Route.ActionArgs) {
     timestamp: Date.now(),
   };
 
-  return data({ response });
+  chatHistory.push(userMessage);
+  chatHistory.push(response);
+
+  return data({ chatHistory: compressChatHistoryForTransport(chatHistory) });
 }
 
 export default function Chat() {
@@ -65,28 +75,22 @@ export default function Chat() {
 
   // Load initial chat history from localStorage
   useEffect(() => {
-    const compressed = localStorage.getItem(CHAT_HISTORY_KEY) || '[]';
-    const storedHistory = decompressChatHistory(compressed);
-    setChatHistory(storedHistory);
+    const compressed = localStorage.getItem(CHAT_HISTORY_KEY);
+    if (compressed) {
+      const storedHistory = decompressChatHistoryFromTransport(compressed);
+      setChatHistory(storedHistory);
+    } else {
+      localStorage.setItem(CHAT_HISTORY_KEY, compressChatHistoryForTransport([]));
+    }
   }, []);
 
   useEffect(() => {
-    const newChatHistory = [...chatHistory];
-    if (fetcher.formData) {
-      newChatHistory.push({
-        sender: 'user',
-        content: fetcher.formData.get('message') as string,
-        timestamp: Date.now(),
-      });
+    if (fetcher.data?.chatHistory && !submitting) {
+      const newHistory = decompressChatHistoryFromTransport(fetcher.data.chatHistory);
+      localStorage.setItem(CHAT_HISTORY_KEY, fetcher.data.chatHistory);
+      setChatHistory(newHistory);
     }
-
-    if (!submitting && fetcher.data) {
-      newChatHistory.push(fetcher.data.response);
-      localStorage.setItem(CHAT_HISTORY_KEY, compressChatHistory(newChatHistory));
-    }
-
-    setChatHistory(newChatHistory);
-  }, [fetcher.formData, fetcher.data, submitting]);
+  }, [fetcher.data, submitting]);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -132,23 +136,36 @@ export default function Chat() {
                 </div>
               )
             )}
-          {submitting && (
-            <div className="flex justify-start">
-              <div className="max-w-[70%] rounded-lg bg-muted p-3 flex items-center space-x-1">
-                <span
-                  className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
-                  style={{ animationDelay: '0s' }}
-                ></span>
-                <span
-                  className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
-                  style={{ animationDelay: '0.2s' }}
-                ></span>
-                <span
-                  className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
-                  style={{ animationDelay: '0.4s' }}
-                ></span>
+          {submitting && fetcher.formData?.get('message') && (
+            <>
+              <div className="flex justify-end">
+                <div className="max-w-[70%] rounded-lg bg-primary text-primary-foreground p-3">
+                  <p className="text-sm">{fetcher.formData.get('message') as string}</p>
+                  <span className="text-xs mt-1 block opacity-80">
+                    {new Date(Number(fetcher.formData.get('timestamp'))).toLocaleTimeString('en-US', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </span>
+                </div>
               </div>
-            </div>
+              <div className="flex justify-start">
+                <div className="max-w-[70%] rounded-lg bg-muted p-3 flex items-center space-x-1">
+                  <span
+                    className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
+                    style={{ animationDelay: '0s' }}
+                  ></span>
+                  <span
+                    className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
+                    style={{ animationDelay: '0.2s' }}
+                  ></span>
+                  <span
+                    className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"
+                    style={{ animationDelay: '0.4s' }}
+                  ></span>
+                </div>
+              </div>
+            </>
           )}
         </div>
       </div>
@@ -169,8 +186,9 @@ export default function Chat() {
             onClick={(e) => {
               e.preventDefault();
               if (message) {
-                const compressedHistory = compressChatHistory(chatHistory);
-                fetcher.submit({ message: message.trim(), compressedHistory }, { method: 'post' });
+                const compressedHistory = compressChatHistoryForTransport(chatHistory);
+                const timestamp = Date.now();
+                fetcher.submit({ message, compressedHistory, timestamp }, { method: 'post' });
                 setMessage('');
               }
             }}
