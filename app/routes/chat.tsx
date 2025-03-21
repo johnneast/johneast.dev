@@ -70,9 +70,9 @@ export default function Chat() {
     <div className="h-full flex flex-col max-h-[inherit]">
       {/* Chat Header */}
       <div className="border-b p-4 shrink-0">
-        <h2 className="text-lg font-semibold">Chat Demo</h2>
+        <h2 className="text-lg font-semibold">Chat with me</h2>
         <p className="text-sm text-muted-foreground">
-          Ask me about my experience or anything else you'd like to know about me.
+          Ask about my experience or anything else you'd like to know about me.
         </p>
       </div>
 
