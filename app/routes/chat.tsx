@@ -7,6 +7,7 @@ import { Button } from '../components/ui/button';
 import type { Message } from '../types/chat';
 import { getChatbotResponse } from '~/lib/chat-api';
 import { compressChatHistory, decompressChatHistory, loadChatHistory, saveChatHistory } from '~/lib/chat-history';
+import ChatMessage from '~/components/chat-message';
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
@@ -78,41 +79,15 @@ export default function Chat() {
       {/* Chat Messages Area */}
       <div ref={messagesEndRef} className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
         <div className="flex flex-col space-y-2">
-          {chatHistory &&
-            chatHistory.map((message) =>
-              message.sender === 'assistant' ? (
-                <div className="flex justify-start" key={message.timestamp}>
-                  <div className="max-w-[70%] rounded-lg bg-muted p-3">
-                    <p className="text-sm">{message.content}</p>
-                    <span className="text-xs text-muted-foreground mt-1 block">
-                      {new Date(message.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex justify-end" key={message.timestamp}>
-                  <div className="max-w-[70%] rounded-lg bg-primary text-primary-foreground p-3">
-                    <p className="text-sm">{message.content}</p>
-                    <span className="text-xs mt-1 block opacity-80">
-                      {new Date(message.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-                </div>
-              )
-            )}
+          {chatHistory && chatHistory.map((message) => <ChatMessage key={message.timestamp} {...message} />)}
+
           {submitting && fetcher.formData?.get('message') && (
             <>
-              <div className="flex justify-end">
-                <div className="max-w-[70%] rounded-lg bg-primary text-primary-foreground p-3">
-                  <p className="text-sm">{fetcher.formData.get('message') as string}</p>
-                  <span className="text-xs mt-1 block opacity-80">
-                    {new Date(Number(fetcher.formData.get('timestamp'))).toLocaleTimeString('en-US', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </span>
-                </div>
-              </div>
+              <ChatMessage
+                content={fetcher.formData.get('message') as string}
+                sender="user"
+                timestamp={Number(fetcher.formData.get('timestamp'))}
+              />
               <div className="flex justify-start">
                 <div className="max-w-[70%] rounded-lg bg-muted p-3 flex items-center space-x-1">
                   <span
