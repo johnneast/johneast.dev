@@ -1,6 +1,6 @@
 # Welcome to my personal website
 
-A simple website built using (react-router)[https://reactrouter.com/] and (shadcn)[https://ui.shadcn.com/] that integrates with OpenAI in order to provide a chat experience
+A simple website built using [react-router](https://reactrouter.com/) and [shadcn](https://ui.shadcn.com/) that integrates with OpenAI in order to provide a chat experience
 where users can ask "me" about my work experience.
 
 ## Getting Started
