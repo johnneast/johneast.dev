@@ -8,32 +8,26 @@ import {
   ScrollRestoration,
   useNavigate,
   useLocation,
-} from "react-router";
+} from 'react-router';
 
-import type { Route } from "./+types/root";
-import "./app.css";
-import { cn } from "./lib/utils";
-import { Button } from "./components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./components/ui/select";
-import FooterContent from "./components/footer-content";
-import HeaderContent from "./components/header-content";
+import type { Route } from './+types/root';
+import './app.css';
+import { cn } from './lib/utils';
+import { Button } from './components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './components/ui/select';
+import FooterContent from './components/footer-content';
+import HeaderContent from './components/header-content';
 
 export const links: Route.LinksFunction = () => [
-  { rel: "preconnect", href: "https://fonts.googleapis.com" },
+  { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
   {
-    rel: "preconnect",
-    href: "https://fonts.gstatic.com",
-    crossOrigin: "anonymous",
+    rel: 'preconnect',
+    href: 'https://fonts.gstatic.com',
+    crossOrigin: 'anonymous',
   },
   {
-    rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+    rel: 'stylesheet',
+    href: 'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap',
   },
 ];
 
@@ -59,13 +53,12 @@ export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const navItems = [
-    { to: "/", label: "About" },
-    { to: "/experience", label: "Experience" },
-    { to: "/chat", label: "Chat" },
+    { to: '/', label: 'About' },
+    { to: '/experience', label: 'Experience' },
+    { to: '/chat', label: 'Chat' },
   ];
 
-  const currentRouteLabel =
-    navItems.find((item) => item.to === location.pathname)?.label || "Select";
+  const currentRouteLabel = navItems.find((item) => item.to === location.pathname)?.label || 'Select';
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
@@ -83,17 +76,9 @@ export default function App() {
                   <NavLink
                     to={item.to}
                     end
-                    className={({ isActive }) =>
-                      cn(
-                        "block w-full",
-                        isActive ? "text-primary" : "text-foreground"
-                      )
-                    }
+                    className={({ isActive }) => cn('block w-full', isActive ? 'text-primary' : 'text-foreground')}
                   >
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start text-left"
-                    >
+                    <Button variant="ghost" className="w-full justify-start text-left">
                       {item.label}
                     </Button>
                   </NavLink>
@@ -120,11 +105,7 @@ export default function App() {
         </header>
 
         <nav className="p-4 sticky top-0 z-10 bg-background">
-          <Select
-            value={location.pathname}
-            defaultValue={currentRouteLabel}
-            onValueChange={(value) => navigate(value)}
-          >
+          <Select value={location.pathname} defaultValue={currentRouteLabel} onValueChange={(value) => navigate(value)}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select a page" />
             </SelectTrigger>
@@ -151,16 +132,13 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Oops!";
-  let details = "An unexpected error occurred.";
+  let message = 'Oops!';
+  let details = 'An unexpected error occurred.';
   let stack: string | undefined;
 
   if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error";
-    details =
-      error.status === 404
-        ? "The requested page could not be found."
-        : error.statusText || details;
+    message = error.status === 404 ? '404' : 'Error';
+    details = error.status === 404 ? 'The requested page could not be found.' : error.statusText || details;
   } else if (import.meta.env.DEV && error && error instanceof Error) {
     details = error.message;
     stack = error.stack;
