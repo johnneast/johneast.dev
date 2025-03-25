@@ -61,7 +61,7 @@ export default function App() {
   const currentRouteLabel = navItems.find((item) => item.to === location.pathname)?.label || 'Select';
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground">
+    <div className="min-h-screen flex flex-col bg-background text-foreground dark">
       {/* Desktop Layout */}
       <div className="hidden md:flex md:flex-row h-screen max-w-7xl mx-auto">
         <div className="md:w-1/2 flex flex-col h-screen p-4 pt-12">
