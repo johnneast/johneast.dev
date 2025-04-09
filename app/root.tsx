@@ -56,6 +56,7 @@ export default function App() {
     { to: '/', label: 'About' },
     { to: '/experience', label: 'Experience' },
     { to: '/chat', label: 'Chat' },
+    { to: '/blog', label: 'Blog' },
   ];
 
   const currentRouteLabel = navItems.find((item) => item.to === location.pathname)?.label || 'Select';
