@@ -42,9 +42,9 @@ export async function getAllPosts(): Promise<BlogPost[]> {
     })
   );
 
-  // Sort posts by date
+  // Sort posts by filename (which should be YYYY-MM-DD)
   return posts.sort((a, b) => {
-    return new Date(b.date).getTime() - new Date(a.date).getTime();
+    return b.slug.localeCompare(a.slug);
   });
 }
 

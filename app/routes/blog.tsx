@@ -1,6 +1,6 @@
 import { getAllPosts } from '~/lib/blog';
 import type { Route } from './+types/blog';
-import { Link } from 'react-router';
+import BlogIndexEntry from '~/components/blog/blog-index-entry';
 
 export async function loader() {
   const posts = await getAllPosts();
@@ -15,15 +15,7 @@ export default function BlogIndex({ loaderData }: Route.ComponentProps) {
       <h2 className="text-xl font-semibold">Blog</h2>
       <div className="space-y-8">
         {posts.map((post) => (
-          <article key={post.slug} className="border-b pb-8">
-            <Link to={`/blog/${post.slug}`}>
-              <h3 className="text-lg font-semibold">{post.title}</h3>
-            </Link>
-            <div className="text-muted-foreground">
-              {post.date} • {post.tags.join(', ')}
-            </div>
-            <p className="text-sm text-muted-foreground">{post.description}</p>
-          </article>
+          <BlogIndexEntry key={post.slug} post={post} />
         ))}
       </div>
     </div>
