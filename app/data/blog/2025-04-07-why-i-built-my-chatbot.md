@@ -1,6 +1,6 @@
 ---
 title: Why I built my chat bot
-date: '2025-04-09'
+date: '2025-04-07'
 description: 'Why’d a 20+ year dev vet build a chatbot? To learn by doing, ditch the flops, and automate the grind. Peek inside my process.'
 tags: ['AI', 'Personal Growth']
 ---
