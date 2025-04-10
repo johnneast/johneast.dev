@@ -31,11 +31,6 @@ export async function getAllPosts(): Promise<BlogPost[]> {
       // Convert markdown to HTML
       const htmlContent = await marked(markdownContent);
 
-      console.log('Raw date from frontmatter:', data.date);
-      console.log('Date object:', new Date(data.date));
-      console.log('UTC date string:', new Date(data.date).toUTCString());
-      console.log('Local date string:', new Date(data.date).toString());
-
       return {
         slug,
         title: data.title,
