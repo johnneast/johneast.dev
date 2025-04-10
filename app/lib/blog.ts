@@ -1,6 +1,7 @@
 import matter from 'gray-matter';
 import { marked } from 'marked';
 import { format } from 'date-fns';
+import { UTCDate } from '@date-fns/utc';
 
 // Import all markdown files at build time
 const blogPosts = import.meta.glob('../data/blog/*.md', {
@@ -30,10 +31,15 @@ export async function getAllPosts(): Promise<BlogPost[]> {
       // Convert markdown to HTML
       const htmlContent = await marked(markdownContent);
 
+      console.log('Raw date from frontmatter:', data.date);
+      console.log('Date object:', new Date(data.date));
+      console.log('UTC date string:', new Date(data.date).toUTCString());
+      console.log('Local date string:', new Date(data.date).toString());
+
       return {
         slug,
         title: data.title,
-        date: format(new Date(data.date), 'MMMM d, yyyy'),
+        date: format(new UTCDate(data.date), 'MMMM d, yyyy'),
         description: data.description,
         tags: data.tags,
         content: markdownContent,

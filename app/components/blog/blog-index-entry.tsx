@@ -8,6 +8,7 @@ export default function BlogIndexEntry({ post }: { post: BlogPost }) {
       <Link to={`/blog/${post.slug}`}>
         <h3 className="text-lg font-semibold">{post.title}</h3>
       </Link>
+      <div className="text-muted-foreground">{post.date}</div>
       <TagList tags={post.tags} />
       <p className="text-sm text-muted-foreground">{post.description}</p>
     </article>
