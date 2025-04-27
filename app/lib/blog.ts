@@ -1,7 +1,5 @@
 import matter from 'gray-matter';
 import { marked } from 'marked';
-import { format } from 'date-fns';
-import { UTCDate } from '@date-fns/utc';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -32,9 +30,8 @@ export interface BlogPostIndexEntry {
 }
 
 export async function getBlogIndex(): Promise<BlogPostIndexEntry[]> {
-  const indexPath = path.join(process.cwd(), 'public/blog-index.json');
-  const index = await fs.readFile(indexPath, 'utf-8');
-  return JSON.parse(index);
+  const index = (await import('../data/blog/blog-index.json')).default;
+  return index as BlogPostIndexEntry[];
 }
 
 export async function getAllPosts(): Promise<BlogPost[]> {

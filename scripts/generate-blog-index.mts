@@ -1,13 +1,24 @@
 import matter from 'gray-matter';
 import fs from 'fs/promises';
 import path from 'path';
-import type { BlogPostIndexEntry } from '~/lib/blog';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+interface BlogPostIndex {
+  slug: string;
+  title: string;
+  date: string;
+  description: string;
+  tags: string[];
+  published: boolean;
+}
 
 async function generateIndex() {
-  const blogDir = path.join(process.cwd(), 'data/blog');
+  const blogDir = path.join(__dirname, '..', 'app/data/blog');
   const files = await fs.readdir(blogDir);
 
-  const index: BlogPostIndexEntry[] = [];
+  const index: BlogPostIndex[] = [];
 
   for (const file of files) {
     if (!file.endsWith('.md')) continue;
@@ -31,8 +42,8 @@ async function generateIndex() {
   // Sort by date
   index.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-  // Write to public directory
-  await fs.writeFile(path.join(process.cwd(), 'public/blog-index.json'), JSON.stringify(index, null, 2));
+  // Write to app/public directory
+  await fs.writeFile(path.join(__dirname, '..', 'app/data/blog/blog-index.json'), JSON.stringify(index, null, 2));
 }
 
 generateIndex();

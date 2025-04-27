@@ -1,7 +1,7 @@
 ---
 title: Why I built my chat bot
 date: '2025-04-07'
-description: 'Why’d a 20+ year dev vet build a chatbot? To learn by doing, ditch the flops, and automate the grind. Peek inside my process.'
+description: 'Why’d a 20+ year dev vet build a chatbot? To learn by doing, and automate the grind. Peek inside my process.'
 tags: ['AI', 'Personal Growth']
 ---
 
@@ -33,7 +33,7 @@ Quick prototypes are my secret weapon for cracking “how do I solve this?”. O
 
 Alright, I’ve blabbed about how I learn and how I apply it at work, but I still haven’t answered the damn question. Here’s the deal: a while back, I found myself jobless. First time in my career. Lucky streak broken. After a quick snowboarding break to clear my head, I started plotting my next steps. The usual suspects made the list: update the resume, spruce up LinkedIn, fire off applications. But I also thought a personal website could be cool.
 
-Problem is, I’m no front-end wizard. I can sling React around and get stuff done, but it’s not winning any design awards. Most dev websites are front-end folks flexing their pixel-perfect skills. How do I show off my backend chops on a site? Technical blogs could work, but I hadn’t been writing them. Building a worthy backlog would take time. While I was mulling this over, recruiters started pinging me on LinkedIn: “Got Java experience? Node? Python?” I’m easily bored. After typing near-identical replies a few times, I wondered if I could automate this. That sparked the idea: an AI chatbot that knows my experience and plays “virtual me.” Perfect project. Learn something new, flex my full-stack skills, and maybe even save me some typing. Off I went.
+Problem is, I’m no front-end wizard. I can sling React around and get stuff done, but it’s not winning any design awards. Most dev websites are front-end folks flexing their pixel-perfect skills. How do I show off my backend chops on a site? Technical blogs could work, but I hadn’t been writing them. Building a worthy backlog would take time. While I was mulling this over, recruiters started pinging me on LinkedIn: “Got Java experience? Node? Python?”. I’m easily bored. After typing near-identical replies a few times, I wondered if I could automate this. That sparked the idea: an AI chatbot that knows my experience and plays “virtual me.” Perfect project. Learn something new, flex my full-stack skills, and maybe even save me some typing. Off I went.
 
 Realistically, no recruiter’s hitting up my website. But I could at least paste their questions into my bot and get solid answers to copy-paste back. Bonus: it’s pretty handy at whipping up cover letters too.
 

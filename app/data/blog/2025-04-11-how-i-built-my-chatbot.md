@@ -3,6 +3,7 @@ title: How I built my chat bot
 date: '2025-04-07'
 description: 'In progress'
 tags: ['AI', 'react-router', 'Pinecone', 'ShadCn']
+published: false
 ---
 
 # How I built my chatbot
