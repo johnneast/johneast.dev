@@ -1,16 +1,16 @@
 import { Link } from 'react-router';
-import type { BlogPost } from '~/lib/blog';
+import type { BlogPostIndexEntry } from '~/lib/blog';
 import TagList from './tag-list';
 
-export default function BlogIndexEntry({ post }: { post: BlogPost }) {
+export default function BlogIndexEntry({ indexEntry }: { indexEntry: BlogPostIndexEntry }) {
   return (
-    <article key={post.slug} className="border-b pb-8">
-      <Link to={`/blog/${post.slug}`}>
-        <h3 className="text-lg font-semibold">{post.title}</h3>
+    <article key={indexEntry.slug} className="border-b pb-8">
+      <Link to={`/blog/${indexEntry.slug}`}>
+        <h3 className="text-lg font-semibold">{indexEntry.title}</h3>
       </Link>
-      <div className="text-muted-foreground">{post.date}</div>
-      <TagList tags={post.tags} />
-      <p className="text-sm text-muted-foreground">{post.description}</p>
+      <div className="text-muted-foreground">{indexEntry.date}</div>
+      <TagList tags={indexEntry.tags} />
+      <p className="text-sm text-muted-foreground">{indexEntry.description}</p>
     </article>
   );
 }

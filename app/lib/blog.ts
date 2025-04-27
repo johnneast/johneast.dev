@@ -2,6 +2,8 @@ import matter from 'gray-matter';
 import { marked } from 'marked';
 import { format } from 'date-fns';
 import { UTCDate } from '@date-fns/utc';
+import fs from 'fs/promises';
+import path from 'path';
 
 // Import all markdown files at build time
 const blogPosts = import.meta.glob('../data/blog/*.md', {
@@ -17,39 +19,73 @@ export interface BlogPost {
   tags: string[];
   content: string;
   htmlContent: string;
+  published: boolean;
+}
+
+export interface BlogPostIndexEntry {
+  slug: string;
+  title: string;
+  date: string;
+  description: string;
+  tags: string[];
+  published: boolean;
+}
+
+export async function getBlogIndex(): Promise<BlogPostIndexEntry[]> {
+  const indexPath = path.join(process.cwd(), 'public/blog-index.json');
+  const index = await fs.readFile(indexPath, 'utf-8');
+  return JSON.parse(index);
 }
 
 export async function getAllPosts(): Promise<BlogPost[]> {
+  const index = await getBlogIndex();
   const posts = await Promise.all(
-    Object.entries(blogPosts).map(async ([filepath, content]) => {
-      // Get slug from filepath
-      const slug = filepath.replace('../data/blog/', '').replace('.md', '');
+    index.map(async (indexEntry) => {
+      const filepath = `../data/blog/${indexEntry.slug}.md`;
+      const content = blogPosts[filepath];
+
+      if (!content) {
+        throw new Error(`Blog post not found: ${indexEntry.slug}`);
+      }
 
       // Parse frontmatter and content
-      const { data, content: markdownContent } = matter(content);
+      const { content: markdownContent } = matter(content);
 
       // Convert markdown to HTML
       const htmlContent = await marked(markdownContent);
 
       return {
-        slug,
-        title: data.title,
-        date: format(new UTCDate(data.date), 'MMMM d, yyyy'),
-        description: data.description,
-        tags: data.tags,
+        ...indexEntry,
         content: markdownContent,
         htmlContent,
       };
     })
   );
 
-  // Sort posts by filename (which should be YYYY-MM-DD)
-  return posts.sort((a, b) => {
-    return b.slug.localeCompare(a.slug);
-  });
+  return posts;
 }
 
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
-  const posts = await getAllPosts();
-  return posts.find((post) => post.slug === slug) || null;
+  const index = await getBlogIndex();
+  const indexEntry = index.find((post) => post.slug === slug);
+
+  if (!indexEntry) {
+    return null;
+  }
+
+  const filepath = `../data/blog/${slug}.md`;
+  const content = blogPosts[filepath];
+
+  if (!content) {
+    return null;
+  }
+
+  const { content: markdownContent } = matter(content);
+  const htmlContent = await marked(markdownContent);
+
+  return {
+    ...indexEntry,
+    content: markdownContent,
+    htmlContent,
+  };
 }
