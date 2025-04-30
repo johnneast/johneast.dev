@@ -1,9 +1,20 @@
 import type { BlogPost } from '~/lib/blog';
 import TagList from './tag-list';
+import { Link } from 'react-router';
+import { Button } from '../ui/button';
+import { ChevronLeft } from 'lucide-react';
 
 export default function BlogArticle({ post }: { post: BlogPost }) {
   return (
     <article>
+      <div className="mb-6">
+        <Link to="/blog">
+          <Button className="gap-2">
+            <ChevronLeft className="h-4 w-4" />
+            Blog Posts
+          </Button>
+        </Link>
+      </div>
       <h1 className="text-xl font-semibold">{post.title}</h1>
       <div className="text-muted-foreground">{post.date}</div>
       <TagList tags={post.tags} />

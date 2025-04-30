@@ -59,7 +59,9 @@ export default function App() {
     { to: '/blog', label: 'Blog' },
   ];
 
-  const currentRouteLabel = navItems.find((item) => item.to === location.pathname)?.label || 'Select';
+  const currentRouteLabel =
+    navItems.find((item) => location.pathname === item.to || (item.to !== '/' && location.pathname.startsWith(item.to)))
+      ?.label || 'Select';
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground dark">
@@ -76,7 +78,7 @@ export default function App() {
                 <li key={item.to}>
                   <NavLink
                     to={item.to}
-                    end
+                    end={item.to === '/'}
                     className={({ isActive }) => cn('block w-full', isActive ? 'text-primary' : 'text-foreground')}
                   >
                     <Button variant="ghost" className="w-full justify-start text-left">
@@ -106,7 +108,14 @@ export default function App() {
         </header>
 
         <nav className="p-4 sticky top-0 z-10 bg-background">
-          <Select value={location.pathname} defaultValue={currentRouteLabel} onValueChange={(value) => navigate(value)}>
+          <Select
+            value={
+              navItems.find(
+                (item) => location.pathname === item.to || (item.to !== '/' && location.pathname.startsWith(item.to))
+              )?.to || location.pathname
+            }
+            onValueChange={(value) => navigate(value)}
+          >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select a page" />
             </SelectTrigger>
