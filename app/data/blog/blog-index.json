@@ -1,9 +1,20 @@
 [
   {
+    "slug": "2025-08-15-cancer-and-frameworks",
+    "title": "Cancer and frameworks",
+    "date": "2025-08-15",
+    "description": "Reflecting on a challenging 2025, I share my journey through cancer treatment and the lessons learned about living and coding in the present moment.",
+    "tags": [
+      "health",
+      "engineering"
+    ],
+    "published": true
+  },
+  {
     "slug": "2025-04-07-why-i-built-my-chatbot",
     "title": "Why I built my chat bot",
     "date": "2025-04-07",
-    "description": "Why’d a 20+ year dev vet build a chatbot? To learn by doing, ditch the flops, and automate the grind. Peek inside my process.",
+    "description": "Why’d a 20+ year dev vet build a chatbot? To learn by doing, and automate the grind. Peek inside my process.",
     "tags": [
       "AI",
       "Personal Growth"
