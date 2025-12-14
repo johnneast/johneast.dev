@@ -26,8 +26,8 @@
     "marked": "^15.0.7",
     "openai": "^4.87.3",
     "pako": "^2.1.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^19.0.1",
+    "react-dom": "^19.0.1",
     "react-router": "^7.3.0",
     "tailwind-merge": "^3.0.2",
     "tailwindcss-animate": "^1.0.7"
